@@ -15,12 +15,15 @@ app.use(cors());
 app.use(express.json());
 
 // --- Conexión a la base de datos ---
-// Cambiá 'user' y 'password' según tu configuración de MySQL
+// Usa variables de entorno si existen (Railway las provee automáticamente).
+// Si no existen (por ejemplo, cuando corrés esto en tu compu con XAMPP),
+// usa los valores de respaldo de la derecha del "||".
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',        // en XAMPP por defecto no tiene contraseña
-    database: 'mi_base'
+    host: process.env.MYSQLHOST || 'localhost',
+    user: process.env.MYSQLUSER || 'root',
+    password: process.env.MYSQLPASSWORD || '',
+    database: process.env.MYSQLDATABASE || 'mi_base',
+    port: process.env.MYSQLPORT || 3306
 });
 
 db.connect((err) => {
@@ -69,7 +72,9 @@ app.delete('/api/productos/:id', (req, res) => {
 });
 
 // --- Iniciar el servidor ---
-const PUERTO = 3000;
+// Railway asigna su propio puerto mediante process.env.PORT.
+// Si esa variable no existe (en tu compu), usamos el 3000 de siempre.
+const PUERTO = process.env.PORT || 3000;
 app.listen(PUERTO, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PUERTO}`);
+    console.log(`🚀 Servidor corriendo en el puerto ${PUERTO}`);
 });
